@@ -2,16 +2,24 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Threading;
 
 public class PlayerController : MonoBehaviour
 {
+	public SerialController serialController;
 	public GameObject leftShoe, rightShoe;
 
 	public bool leftFootAhead, rightFoodAhead;
+	public bool leftInput, rightInput;
 
 	public Text win, timer, lose;
 
-	public float timeRemaining = 15f;
+	public float timeRemaining = 15f; 
+	
+	void Start()
+	{
+		serialController = GameObject.Find("SerialController").GetComponent<SerialController>();
+	}
 	// Update is called once per frame
 	void Update()
 	{
@@ -30,18 +38,61 @@ public class PlayerController : MonoBehaviour
 		{
 			lose.enabled = true;
 		}
+
+		string message = serialController.ReadSerialMessage();
+
+		if (message == null)
+			return;
+
+		if(message == "LeftDown")
+		{
+			leftInput = true;
+		}
+		else if (message == "LeftUp")
+		{
+			leftInput = false;
+		}
+		if(message == "RightDown")
+		{
+			rightInput = true;
+		}
+		else if (message == "RightUp")
+		{
+			rightInput = false;
+		}
+
+
+		// Check if the message is plain data or a connect/disconnect event.
+		if (ReferenceEquals(message, SerialController.SERIAL_DEVICE_CONNECTED))
+			Debug.Log("Connection established");
+		else if (ReferenceEquals(message, SerialController.SERIAL_DEVICE_DISCONNECTED))
+			Debug.Log("Connection attempt failed or disconnection detected");
+		else
+			Debug.Log("Message arrived: " + message);
 	}
 
 	public void Movement()
 	{
-		if (Input.GetKeyDown(KeyCode.A)) //Left Foot Button Pushed Down
+
+		if (!leftInput && rightInput) //Left Foot Button Pushed Down
 			LeftStep();
 
-		if (Input.GetKeyDown(KeyCode.D)) //Right Foot Button Pushed Down
+		if (!rightInput && leftInput) //Right Foot Button Pushed Down
 			RightStep();
 	}
 	public void LeftStep()
 	{
+		string message = serialController.ReadSerialMessage();
+
+		if (message == null)
+		{
+			Debug.Log("na");
+		}
+		else
+		{
+			Debug.Log(message);
+		}
+
 		if (!leftFootAhead)
 		{
 			if (rightFoodAhead)
