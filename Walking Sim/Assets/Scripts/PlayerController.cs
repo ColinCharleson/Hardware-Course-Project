@@ -46,19 +46,19 @@ public class PlayerController : MonoBehaviour
 
 		if(message == "LeftDown")
 		{
-			leftInput = true;
+			rightInput = true;
 		}
 		else if (message == "LeftUp")
 		{
-			leftInput = false;
+			rightInput = false;
 		}
 		if(message == "RightDown")
 		{
-			rightInput = true;
+			leftInput = true;
 		}
 		else if (message == "RightUp")
 		{
-			rightInput = false;
+			leftInput = false;
 		}
 
 
